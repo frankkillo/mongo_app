@@ -1,11 +1,10 @@
-from pprint import pprint
-
 from aiogram import Bot, Dispatcher, executor, types
 from motor import motor_asyncio
 
 from config import MONGODB_URL, MONGO_DB, MONGO_COLLECTION, TELEGRAM_TOKEN
 from tools import query_validator
 from commands import aggregator
+import json
 
 client = motor_asyncio.AsyncIOMotorClient(MONGODB_URL)
 db = client[MONGO_DB]
@@ -34,6 +33,7 @@ async def aggregate_query(message: types.Message):
         await bot.send_message(message.chat.id, query_example)
     else:
         result = await aggregator(db, collection, **query)
+        result = json.dumps(result)
         await bot.send_message(message.chat.id, result)
 
 

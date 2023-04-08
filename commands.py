@@ -8,11 +8,10 @@ async def aggregator(db: AsyncIOMotorDatabase, collection: str, dt_from: datetim
     dt = ""
     bound_upto = ""
     hour = 0
-    day = 1
+    day = {"$dayOfMonth": "$f"}
     if group_type == "day":
         dt = "dayOfYear"
         bound_upto = dt_upto + relativedelta(days=1)
-        day = {"$dayOfMonth": "$f"}
     elif group_type == "hour":
         dt = group_type
         bound_upto = dt_upto + relativedelta(hours=1)
@@ -21,6 +20,7 @@ async def aggregator(db: AsyncIOMotorDatabase, collection: str, dt_from: datetim
     elif group_type == "month":
         dt = group_type
         bound_upto = dt_upto + relativedelta(months=1)
+        day = 1
     else:
         return {}
 
@@ -93,5 +93,5 @@ async def aggregator(db: AsyncIOMotorDatabase, collection: str, dt_from: datetim
     ])
 
     data = await db.command(command)
-    
+
     return data["cursor"]["firstBatch"][0]
